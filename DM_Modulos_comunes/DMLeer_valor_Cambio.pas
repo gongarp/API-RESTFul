@@ -21,6 +21,7 @@ type
     { Private declarations }
   public
     { Public declarations }
+    constructor Create(AOwner: TComponent); override;
   end;
 
     function leer_fecha_periodo(sTipo_Unidad,
@@ -234,6 +235,13 @@ uses DM_Comun
 
 
 {$R *.DFM}
+constructor TDM_Leer_Valor_Cambio.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+  Qry_General.ConnectionName := 'PMSSERVER';
+  Qry_leer_valor_cambio2_Moneda.ConnectionName := 'PMSSERVER';
+  Qry_leer_valor_cambio2_Indice_Tasa.ConnectionName := 'PMSSERVER';
+end;
 function leer_fecha_periodo(sTipo_Unidad,
                             sUnidad,
                             sTipo_Variacion : String;
@@ -248,7 +256,7 @@ var
 begin
   Result := True;
   decodedate(dfecha,wano,wMes,wdia);
-  if sTipo_Variacion = 'A' then  {Periodo en el aÒo}
+  if sTipo_Variacion = 'A' then  {Periodo en el a√±o}
     begin
      With DM_Leer_Valor_Cambio.QRY_General do
       begin
@@ -273,7 +281,7 @@ begin
      if wMes_Referencia = 0 then
        begin
          With DM_Leer_Valor_Cambio.QRY_General do
-           begin   {Si no hay meses antes busco el ultimo periodo del aÒo anterior}
+           begin   {Si no hay meses antes busco el ultimo periodo del a√±o anterior}
              wano := wano - 1;
              SQL.Clear;
              SQL.Add('SELECT MAX(Mes_Referencia) As Mes_Referencia'
@@ -463,7 +471,7 @@ begin
                             ,dfecha) then
           begin
              strpcopy(aux_pchar
-                     ,'Error en definiciÛn de perÌodo para: '''+sMon_Origen+''''
+                     ,'Error en definici√≥n de per√≠odo para: '''+sMon_Origen+''''
                      +#10'con fecha: '+datetostr(dfecha_Periodo));
 
              Application.MessageBox(aux_pchar
@@ -539,7 +547,7 @@ begin
   if NOT Result then
     begin
         strpcopy(aux_pchar,
-                'No se encontro conversiÛn'#10
+                'No se encontro conversi√≥n'#10
                +'de '+sMon_Origen+' a '+sMon_Paridad+''#10
                +'con fecha: '+datetostr(dfecha)
                );
@@ -634,7 +642,7 @@ var
      if NOT bResult then
      begin
        sModulo_Err := 'Determina Tasa SOFR_COMP';
-       sString_Err := 'No se pudo obtener paÌs para indice '''+sCodigo_Indice+'''';
+       sString_Err := 'No se pudo obtener pa√≠s para indice '''+sCodigo_Indice+'''';
        exit;
      end;
 
@@ -657,7 +665,7 @@ var
       if not bResult then
       begin
          sModulo_Err := 'Determina Tasa SOFR_COMP';
-         sString_Err := 'No se encontrÛ valor para '''+sCodigo_Indice+''''
+         sString_Err := 'No se encontr√≥ valor para '''+sCodigo_Indice+''''
                        +'. Con Fecha :'+DateToStr(dfecha_Inicio);
          exit;
       end;
@@ -681,7 +689,7 @@ var
          if not bResult then
          begin
              sModulo_Err := 'Determina Tasa SOFR_COMP';
-             sString_Err := 'No se encontrÛ valor para '''+sCodigo_Indice+''''
+             sString_Err := 'No se encontr√≥ valor para '''+sCodigo_Indice+''''
                        +'. Con Fecha :'+DateToStr(sFecha_Fin);
               exit;
          end;
@@ -827,7 +835,7 @@ begin
                                 ,dfecha) then
           begin
              strpcopy(aux_pchar
-                     ,'Error en definiciÛn de perÌodo para : '''+sMon_Origen+''''
+                     ,'Error en definici√≥n de per√≠odo para : '''+sMon_Origen+''''
                      +#10'con fecha: '+datetostr(dfecha));
 
              Application.MessageBox(aux_pchar
@@ -914,7 +922,7 @@ begin
 
             //Prepare;
             Open;
-            if (FieldByName('Valor_Moneda').IsNull) then  // solo debe validar si no existe registro, valor 0 puede ser v·lido
+            if (FieldByName('Valor_Moneda').IsNull) then  // solo debe validar si no existe registro, valor 0 puede ser v√°lido
             begin
               Result := False;
               fParidad := 0;
@@ -1044,7 +1052,7 @@ begin
                          ,dFecha_Vcto_Anterior
                          ,dFecha_Vcto
                          ,dFecha_Calculo
-                         ,'SOFRINDX'  // CÛdigo del indice para determinar la variacion
+                         ,'SOFRINDX'  // C√≥digo del indice para determinar la variacion
                          ,fTasa_Resultado
                          ,Modulo_Err
                          ,String_Err
@@ -1053,7 +1061,7 @@ begin
    end;
 
 
-   // Para los calculos con formula para ICP la definiciÛn de tratamiento de fechas en la tabla debe ser VAFECA
+   // Para los calculos con formula para ICP la definici√≥n de tratamiento de fechas en la tabla debe ser VAFECA
    // Para ya que se valida que hasta esa fecha existan valores ...
 
    if (sFormula = 'ICP')    or
@@ -1062,7 +1070,7 @@ begin
       // Nunca deberia llegar aqui con una fecha de inicio > a la fecha de calculo
       if (dFecha_Inicio > dFecha_Calculo) then
       begin
-         Modulo_Err := 'ObtenciÛn de Valores Tasa con formula';
+         Modulo_Err := 'Obtenci√≥n de Valores Tasa con formula';
          String_Err := 'No se puede calcular tasa para flujo que vence el '+DateToStr(dFecha_Vcto)+' Inicio flujo mayor que el calculo';
          exit;
       end;
@@ -1075,7 +1083,7 @@ begin
                         ,bResult);
       if not bResult then
       begin
-         Modulo_Err := 'ObtenciÛn de Valores Tasa con formula';
+         Modulo_Err := 'Obtenci√≥n de Valores Tasa con formula';
          String_Err := 'No se encontro Valor para ICP'
                        +'. Con Fecha :'+DateToStr(dfecha_Inicio);
          exit;
@@ -1090,7 +1098,7 @@ begin
 
 
          // 19-08-2020
-         // Se acuerda que para los dias inhabiles se utilizaran los valores del dÌa habil siguiente,
+         // Se acuerda que para los dias inhabiles se utilizaran los valores del d√≠a habil siguiente,
          // lo anterior
          While (Feriado_Mem(sPais_Usuario,dFecha_Calculo)  or  (DayOfWeek(dFecha_Calculo) in [1,7])) do
                dFecha_Calculo := dFecha_Calculo + 1;
@@ -1103,7 +1111,7 @@ begin
                            ,bResult);
          if not bResult then
          begin
-            Modulo_Err := 'ObtenciÛn de Valores Tasa con formula';
+            Modulo_Err := 'Obtenci√≥n de Valores Tasa con formula';
             String_Err := 'No se encontro valor para ICP con fecha :'+DateToStr(dFecha_Calculo);
             exit;
          end;
@@ -1136,7 +1144,7 @@ begin
                           ,bResult);
         if not bResult then
         begin
-           Modulo_Err := 'ObtenciÛn de Valores Tasa con formula';
+           Modulo_Err := 'Obtenci√≥n de Valores Tasa con formula';
            String_Err := 'No se encontro Valor para ICP'
                          +'. Con Fecha :'+DateToStr(dfecha_Termino);
            exit;
@@ -1161,15 +1169,15 @@ begin
 
          if NOT bResult then
          begin
-            Modulo_Err := 'ObtenciÛn de Valores Tasa con formula';
-            String_Err := 'No se encontro DefiniciÛn Tasa Base para '+sCodigo_Tasa;
+            Modulo_Err := 'Obtenci√≥n de Valores Tasa con formula';
+            String_Err := 'No se encontro Definici√≥n Tasa Base para '+sCodigo_Tasa;
             exit;
          end;
 
          if fICP_Inicio = 0 then
          begin
            fTasa_Resultado := 0;
-           Modulo_Err := 'ObtenciÛn de Valores Tasa con formula';
+           Modulo_Err := 'Obtenci√≥n de Valores Tasa con formula';
            String_Err := 'Valor para ICP inicial no puede ser cero.'
                          +' Con Fecha: '+DateToStr(fICP_Inicio);
            exit;
@@ -1196,13 +1204,13 @@ begin
        // Otros dias --> TNA=REDONDEAR([((ICPi/ICP0-1)*36000/(Ti-T0))*(Ti-T0)-((ICPi-1/ICP0-1)*36000/(Ti-1-T0))*(Ti-1-T0)]/(Ti-Ti-1),2)
 
 
-       // T0 = significa, la fecha de suscripciÛn de este PagarÈ y, a partir de entonces, cada Fecha de Vencimiento siguiente
-       // Ti = significa el DÌa H·bil Bancario siguiente al de la suscripciÛn de este PagarÈ y, a partir de entonces, cada DÌa H·bil Bancario siguiente.
-       // Ti-1 = significa el DÌa H·bil Bancario inmediatamente anterior a Ti.
+       // T0 = significa, la fecha de suscripci√≥n de este Pagar√© y, a partir de entonces, cada Fecha de Vencimiento siguiente
+       // Ti = significa el D√≠a H√°bil Bancario siguiente al de la suscripci√≥n de este Pagar√© y, a partir de entonces, cada D√≠a H√°bil Bancario siguiente.
+       // Ti-1 = significa el D√≠a H√°bil Bancario inmediatamente anterior a Ti.
 
-       // ICP0 significa el Õndice C·mara Promedio publicado en la fecha de suscripciÛn de este PagarÈ y, a partir de entonces, en cada Fecha de Vencimiento siguiente.
-       // ICPi significa el Õndice C·mara Promedio publicado el DÌa H·bil Bancario siguiente al de la suscripciÛn de este PagarÈ y, a partir de entonces, cada DÌa H·bil Bancario siguiente.
-       // ICPi-1 significa, el Õndice C·mara Promedio publicado el DÌa H·bil Bancario inmediatamente anterior a ICPi.
+       // ICP0 significa el √çndice C√°mara Promedio publicado en la fecha de suscripci√≥n de este Pagar√© y, a partir de entonces, en cada Fecha de Vencimiento siguiente.
+       // ICPi significa el √çndice C√°mara Promedio publicado el D√≠a H√°bil Bancario siguiente al de la suscripci√≥n de este Pagar√© y, a partir de entonces, cada D√≠a H√°bil Bancario siguiente.
+       // ICPi-1 significa, el √çndice C√°mara Promedio publicado el D√≠a H√°bil Bancario inmediatamente anterior a ICPi.
 
        dT0 := dFecha_Vcto_Anterior; // Ojo la formula no dice nada si es que debe ser habil o no.
 
@@ -1215,7 +1223,7 @@ begin
        // del dia siguiente
        dTi := dFecha_Calculo;
        // dTi := dFecha_Calculo + 1;
-       // DÌa Habil Siguiente
+       // D√≠a Habil Siguiente
        While (Feriado_Mem(sPais_Usuario,dTi)  or  (DayOfWeek(dTi) in [1,7])) do
              dTi := dTi + 1;
 
@@ -1258,13 +1266,13 @@ begin
                          ,bResult);
        if not bResult then
        begin
-          Modulo_Err := 'ObtenciÛn de Valores Tasa con formula';
+          Modulo_Err := 'Obtenci√≥n de Valores Tasa con formula';
           String_Err := 'No se encontro valor para ICP con fecha :'+DateToStr(dT0);
           exit;
        end;
        if (fICP0 = 0) then
        begin
-          Modulo_Err := 'ObtenciÛn de Valores Tasa con formula';
+          Modulo_Err := 'Obtenci√≥n de Valores Tasa con formula';
           String_Err := 'Valor para ICP inicial no puede ser cero.'
                          +' Con Fecha: '+DateToStr(dT0)+' T0';
           exit;
@@ -1278,7 +1286,7 @@ begin
                          ,bResult);
        if not bResult then
        begin
-          Modulo_Err := 'ObtenciÛn de Valores Tasa con formula';
+          Modulo_Err := 'Obtenci√≥n de Valores Tasa con formula';
           String_Err := 'No se encontro valor para ICP con fecha :'+DateToStr(dTi)+' Ti';
           exit;
        end;
@@ -1297,8 +1305,8 @@ begin
 
        if NOT bResult then
        begin
-          Modulo_Err := 'ObtenciÛn de Valores Tasa con formula';
-          String_Err := 'No se encontro DefiniciÛn Tasa Base para '+sCodigo_Tasa;
+          Modulo_Err := 'Obtenci√≥n de Valores Tasa con formula';
+          String_Err := 'No se encontro Definici√≥n Tasa Base para '+sCodigo_Tasa;
           exit;
        end;
 
@@ -1308,7 +1316,7 @@ begin
 
           if (dTi-dT0 = 0) then
           begin
-             Modulo_Err := 'ObtenciÛn de Valores Tasa con formula';
+             Modulo_Err := 'Obtenci√≥n de Valores Tasa con formula';
              String_Err := 'Ti-T0 = 0  Ti = '+DateToStr(dTi);
              exit;
           end;
@@ -1327,14 +1335,14 @@ begin
                             ,bResult);
           if not bResult then
           begin
-             Modulo_Err := 'ObtenciÛn de Valores Tasa con formula';
+             Modulo_Err := 'Obtenci√≥n de Valores Tasa con formula';
              String_Err := 'No se encontro valor para ICP con fecha :'+DateToStr(dTi_1)+' Ti-1';
              exit;
           end;
 
           if (dTi-dTi_1 = 0) then
           begin
-             Modulo_Err := 'ObtenciÛn de Valores Tasa con formula';
+             Modulo_Err := 'Obtenci√≥n de Valores Tasa con formula';
              String_Err := 'Ti-Ti_1 = 0  Imposible Ti = '+DateToStr(dTi);
              exit;
           end;
@@ -1383,7 +1391,7 @@ begin
                            ,bResult);
          if not bResult then
          begin
-            Modulo_Err := 'ObtenciÛn de Valores Tasa';
+            Modulo_Err := 'Obtenci√≥n de Valores Tasa';
             String_Err := 'No se encontro Valor para UF'
                           +'. Con Fecha :'+DateToStr(dFecha_Inicio);
             exit;
@@ -1397,7 +1405,7 @@ begin
                            ,bResult);
          if not bResult then
          begin
-            Modulo_Err := 'ObtenciÛn de Valores Tasa';
+            Modulo_Err := 'Obtenci√≥n de Valores Tasa';
             String_Err := 'No se encontro Valor para UF'
                           +'. Con Fecha :'+DateToStr(dFecha_Termino);
             exit;
@@ -1502,7 +1510,7 @@ begin
                                ,dfecha) then
       begin
          strpcopy(aux_pchar
-                 ,'Error en definiciÛn de perÌodo para : '''+sMon_Origen+''''
+                 ,'Error en definici√≥n de per√≠odo para : '''+sMon_Origen+''''
                  +#10'con fecha: '+datetostr(dfecha));
          Application.MessageBox(aux_pchar
                               ,'Valor Paridad'
@@ -1705,7 +1713,7 @@ begin
                               Result);
         if NOT Result then
            begin
-             Modulo_Err := 'ConversiÛn de Unidad Monetaria (1)';
+             Modulo_Err := 'Conversi√≥n de Unidad Monetaria (1)';
              String_Err := 'No se registra valor de '+sUniMon_Origen+#10
                           +'con fecha: '+datetostr(dfecha_cambio);
              Result := False;
@@ -1739,7 +1747,7 @@ begin
                            Result);
            if NOT Result then
            begin
-             Modulo_Err := 'ConversiÛn de Unidad Monetaria';
+             Modulo_Err := 'Conversi√≥n de Unidad Monetaria';
              String_Err := 'No se registra paridad de '+trim(sUniMon_Origen)+#10
                           +'a '+trim(sUnidad_Conv_Resultado)
                           +' con fecha: '+datetostr(dfecha_cambio);
@@ -1756,7 +1764,7 @@ begin
                            Result);
         if NOT Result then
            begin
-             Modulo_Err := 'ConversiÛn de Unidad Monetaria (2)';
+             Modulo_Err := 'Conversi√≥n de Unidad Monetaria (2)';
              String_Err := 'No se registra valor de '+trim(sUniMon_Resultado)+#10
                            +'con fecha: '+datetostr(dfecha_cambio);
              Result := False;
@@ -1768,7 +1776,7 @@ begin
            dValor_Resultado := 0;
       end
    else
-   begin   { ConversiÛn entre monedas normal}
+   begin   { Conversi√≥n entre monedas normal}
 
     leer_valor_cambio2(sUniMon_Origen,
                         sUniMon_Resultado,
@@ -1778,7 +1786,7 @@ begin
                         Result);
      if NOT Result then
         begin
-          Modulo_Err := 'ConversiÛn de Unidad Monetaria';
+          Modulo_Err := 'Conversi√≥n de Unidad Monetaria';
           //ggarcia 30-10-2017
           //String_Err := 'No se registra paridad de '+trim(sUniMon_Origen)
           String_Err := 'No se registra paridad '+sTipo_Cambio+' de '+trim(sUniMon_Origen)
@@ -1842,7 +1850,7 @@ begin
                                  Result);
       if NOT Result then
       begin
-         Modulo_Err := 'ConversiÛn de Unidad Monetaria (1)';
+         Modulo_Err := 'Conversi√≥n de Unidad Monetaria (1)';
          String_Err := 'No se registra valor de '+sUniMon_Origen+#10
                       +'con fecha: '+datetostr(dfecha_cambio);
          Result := False;
@@ -1877,7 +1885,7 @@ begin
                                  Result);
       if NOT Result then
       begin
-        Modulo_Err := 'ConversiÛn de Unidad Monetaria';
+        Modulo_Err := 'Conversi√≥n de Unidad Monetaria';
         String_Err := 'No se registra paridad de '+trim(sUniMon_Origen)+#10
                      +'a '+trim(sUnidad_Conv_Resultado)
                      +' con fecha: '+datetostr(dfecha_cambio);
@@ -1894,7 +1902,7 @@ begin
                                  Result);
       if NOT Result then
       begin
-         Modulo_Err := 'ConversiÛn de Unidad Monetaria (2)';
+         Modulo_Err := 'Conversi√≥n de Unidad Monetaria (2)';
          String_Err := 'No se registra valor de '+trim(sUniMon_Resultado)+#10
                        +'con fecha: '+datetostr(dfecha_cambio);
          Result := False;
@@ -1907,7 +1915,7 @@ begin
    end
    else
    begin
-      { ConversiÛn entre monedas normal}
+      { Conversi√≥n entre monedas normal}
       Leer_valor_cambio_con_tipo(sUniMon_Origen,
                                  sUniMon_Resultado,
                                  sTipo_Cambio,
@@ -1917,7 +1925,7 @@ begin
                                  Result);
       if NOT Result then
       begin
-         Modulo_Err := 'ConversiÛn de Unidad Monetaria';
+         Modulo_Err := 'Conversi√≥n de Unidad Monetaria';
          //ggarcia 30-10-2017
          //String_Err := 'No se registra paridad de '+trim(sUniMon_Origen)
          String_Err := 'No se registra paridad '+sTipo_Cambio+' de '+trim(sUniMon_Origen)
@@ -1995,7 +2003,7 @@ begin
                           +DateToStr(dFecha)
                           +' para '
                           +FloatToStr(iDiasDif)
-                          +' dÌas';
+                          +' d√≠as';
            Exit;
         end;
 
@@ -2111,7 +2119,7 @@ begin
                                 +DateToStr(dFecha)
                                 +' para '
                                 +FloatToStr(iDiasDif)
-                                +' dÌas';
+                                +' d√≠as';
 
            end;
            Close;
@@ -2210,7 +2218,7 @@ begin
                           +DateToStr(dFecha)
                           +' para '
                           +FloatToStr(iDiasDif)
-                          +' dÌas';
+                          +' d√≠as';
            Exit;
         end;
 
@@ -2297,7 +2305,7 @@ begin
                                     +DateToStr(dFecha)
                                     +' para '
                                     +FloatToStr(iDiasDif)
-                                    +' dÌas';
+                                    +' d√≠as';
                   end
                   else
                      sString_Err := 'No se pudo interpolar tasa : '
@@ -2306,7 +2314,7 @@ begin
                                     +DateToStr(dFecha)
                                     +' para '
                                     +FloatToStr(iDiasDif)
-                                    +' dÌas';
+                                    +' d√≠as';
 
 
 //                  if fValor_Tasa_1 = 0 then
@@ -2316,7 +2324,7 @@ begin
 //                                    +DateToStr(dFecha)
 //                                    +' para '
 //                                    +FloatToStr(iDiasDif)
-//                                    +' dÌas';
+//                                    +' d√≠as';
               end;
            end
            else
@@ -2355,7 +2363,7 @@ begin
                                    +DateToStr(dFecha)
                                    +' para '
                                    +FloatToStr(iDiasDif)
-                                   +' dÌas';
+                                   +' d√≠as';
            end;
            Close;
          end
@@ -2369,7 +2377,7 @@ begin
                                  Result);
               if NOT Result then
               begin
-                Modulo_Err := 'ConversiÛn de Unidad Monetaria';
+                Modulo_Err := 'Conversi√≥n de Unidad Monetaria';
                 String_Err := 'No se registra paridad de '+trim(RegParamMargen.Tasa_Base_2)
                              +' a '+trim(RegParamMargen.Tasa_Base_2)+#10
                              +'con fecha: '+datetostr(dFecha_Tasa);
@@ -2432,7 +2440,7 @@ begin
                           +DateToStr(dFecha)
                           +' para '
                           +FloatToStr(iDiasDif)
-                          +' dÌas';
+                          +' d√≠as';
            Exit;
         end;
 
@@ -2548,7 +2556,7 @@ begin
                                 +DateToStr(dFecha)
                                 +' para '
                                 +FloatToStr(iDiasDif)
-                                +' dÌas';
+                                +' d√≠as';
 
            end;
            Close;
@@ -2563,7 +2571,7 @@ begin
                                  Result);
               if NOT Result then
               begin
-                Modulo_Err := 'ConversiÛn de Unidad Monetaria';
+                Modulo_Err := 'Conversi√≥n de Unidad Monetaria';
                 String_Err := 'No se registra paridad de '+trim(RegParamMargen.Tasa_Base_2)
                              +' a '+RegParamMargen.Tasa_Base_2+#10
                              +'con fecha: '+datetostr(dFecha_Tasa);
@@ -2630,7 +2638,7 @@ begin
                        +DateToStr(dFecha)
                        +' para '
                        +FloatToStr(fPlazo)
-                       +' dÌas';
+                       +' d√≠as';
         Exit;
      end;
 
@@ -2713,7 +2721,7 @@ begin
                              +DateToStr(dFecha)
                              +' para '
                              +FloatToStr(fPlazo)
-                             +' dÌas';
+                             +' d√≠as';
          end
          else
             sString_Err := 'No se pudo interpolar tasa : '
@@ -2722,7 +2730,7 @@ begin
                            +DateToStr(dFecha)
                            +' para '
                            +FloatToStr(fPlazo)
-                           +' dÌas';
+                           +' d√≠as';
      end;
      Close;
    End;
@@ -2925,7 +2933,7 @@ begin
                               +DateToStr(dFecha)
                               +' para '
                               +FloatToStr(iDiasDif)
-                              +' dÌas';
+                              +' d√≠as';
 
          end;
       end;
@@ -3047,7 +3055,7 @@ begin
                               +DateToStr(dFecha)
                               +' para '
                               +FloatToStr(iDiasDif)
-                              +' dÌas';
+                              +' d√≠as';
 
          end;
       end;
@@ -3918,7 +3926,7 @@ begin
 
    if (dFecha_Proyeccion < dFecha_Calculo) then
    begin
-       sModulo_Err := 'ProyecciÛn de tasa / indice por curvas';
+       sModulo_Err := 'Proyecci√≥n de tasa / indice por curvas';
        sString_Err := 'Fecha Proyeccion ('+DateToStr(dFecha_Proyeccion)+') es menor que fecha de calculo ('+DateToStr(dFecha_Calculo)+')';
        bResult     := False;
        exit;
@@ -3937,8 +3945,8 @@ begin
 
      if ((FieldByName('Tasa_Equiv').AsString = '') or (FieldByName('Tasa_Equiv').IsNull)) then
      begin
-       sModulo_Err := 'ProyecciÛn de tasa / indice por curvas';
-       sString_Err := 'No esta definida tasa equivalente (curva proyecciÛn) para: '+sCodigo_Indice;
+       sModulo_Err := 'Proyecci√≥n de tasa / indice por curvas';
+       sString_Err := 'No esta definida tasa equivalente (curva proyecci√≥n) para: '+sCodigo_Indice;
        bResult     := False;
        Close;
        exit;
@@ -3975,8 +3983,8 @@ begin
 
    if (iDias_Base_Curva = 0) then
    begin
-      sModulo_Err := 'ProyecciÛn de tasa / indice por curvas';
-      sString_Err := 'Base dÌas para '+sCurva_Proy_utilizada+' no puede ser cero';
+      sModulo_Err := 'Proyecci√≥n de tasa / indice por curvas';
+      sString_Err := 'Base d√≠as para '+sCurva_Proy_utilizada+' no puede ser cero';
       exit;
    end;
 
@@ -4021,8 +4029,8 @@ begin
 
    if (fFD_Proyeccion = 0) then
    begin
-       sModulo_Err := 'ProyecciÛn de flujos por curvas';
-       sString_Err := 'No se puede proyectar valor de ('+sCodigo_Indice+') para '+FloatToStr(fDias)+ ' dÌas. Factor de descuento es cero.';
+       sModulo_Err := 'Proyecci√≥n de flujos por curvas';
+       sString_Err := 'No se puede proyectar valor de ('+sCodigo_Indice+') para '+FloatToStr(fDias)+ ' d√≠as. Factor de descuento es cero.';
        bResult      := False;
        exit;
    end;
